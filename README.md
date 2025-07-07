@@ -1,5 +1,5 @@
-# Langgraph_mcp_agent
-MCP-enabled intelligent agents based on the Langgraph framework.
+# langgraph_mcp_agent
+基于Langgraph架构的支持MCP协议的智能代理
 
 # 项目名称
 
@@ -19,7 +19,7 @@ MCP-enabled intelligent agents based on the Langgraph framework.
 ├── app/              
 │   └── app.py             # 应用主程序(streamLIT)
 ├── core/
-│   ├── chat/       # 
+│   ├── chat/              # 
 |   ├── mcp_server/
 |   └── mcp_client.py
 ├── libs/
@@ -38,7 +38,7 @@ MCP-enabled intelligent agents based on the Langgraph framework.
 ## 环境要求
 
 - Python 3.8+
-- 依赖库见 requirements.txt
+- 依赖库用uv直接下载
 
 ## 快速开始
 
