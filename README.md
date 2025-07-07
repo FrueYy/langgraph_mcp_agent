@@ -23,10 +23,10 @@ MCP-enabled intelligent agents based on the Langgraph framework.
 ## 快速开始
 
 ```bash
-git clone https://github.com/<用户名>/my_ai_agent_project.git
-cd my_ai_agent_project
+git clone https://github.com/FrueYy/langgraph_mcp_agent.git
+cd langgraph_mcp_agent
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-streamlit run app/main.py
+streamlit run app/app.py
 
