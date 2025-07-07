@@ -14,6 +14,7 @@ MCP-enabled intelligent agents based on the Langgraph framework.
 - 支持工具自动调用与结果处理
 
 ## 目录结构
+```bash
 .
 ├── app/              
 │   └── app.py             # 应用主程序(streamLIT)
