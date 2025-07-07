@@ -14,6 +14,25 @@ MCP-enabled intelligent agents based on the Langgraph framework.
 - 支持工具自动调用与结果处理
 
 ## 目录结构
+.
+├── app/              
+│   └── app.py             # 应用主程序(streamLIT)
+├── core/
+│   ├── chat/       # 
+|   ├── mcp_server/
+|   └── mcp_client.py
+├── libs/
+│   ├── llm_client.py             # 
+│   └── utils.py              # 
+├── tests/
+│   ├── test_chat_session.py             # 
+│   ├── test_mcp_client.py             # 
+│   ├── test_mcp_server.py             # 
+│   └── ...                             # 
+├── pyproject.toml            # 
+├── uv.lock                   # 
+├── .gitignore
+└── README.md 
 
 ## 环境要求
 
@@ -25,8 +44,9 @@ MCP-enabled intelligent agents based on the Langgraph framework.
 ```bash
 git clone https://github.com/FrueYy/langgraph_mcp_agent.git
 cd langgraph_mcp_agent
-python3 -m venv .venv
+pip install uv
+uv venv
 source .venv/bin/activate
-pip install -r requirements.txt
+uv install
 streamlit run app/app.py
 
