@@ -35,11 +35,13 @@ def power(base: float, exponent: float) -> float:
     return base ** exponent
 
 @mcp.tool()
-def sqrt(x: float) -> float:
-    """Return the square root of a number"""
-    if x < 0:
-        raise ValueError("Cannot take square root of negative number")
-    return math.sqrt(x)
+def nth_root(x: float, n: float) -> float:
+    """Return the n-th root of a number x (e.g., n=2 means square root)"""
+    if n == 0:
+        raise ValueError("Root order n cannot be zero")
+    if x < 0 and n % 2 == 0:
+        raise ValueError("Cannot take even root of negative number (result would be complex)")
+    return x ** (1 / n)
 
 @mcp.tool()
 def log(x: float, base: float = math.e) -> float:
