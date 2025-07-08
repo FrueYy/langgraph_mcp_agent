@@ -1,0 +1,7 @@
+{
+        "math": {
+        "command": "python",
+        "args": ["/mnt/e/project/langgraph_mcp_agent/core/mcp_server/tools/math_tools.py"],
+        "transport": "stdio"
+    }
+}
