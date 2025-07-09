@@ -3,5 +3,15 @@
         "command": "python",
         "args": ["/mnt/e/project/langgraph_mcp_agent/core/mcp_server/tools/math_tools.py"],
         "transport": "stdio"
-    }
+    },
+        "weather": {
+        "command": "python",
+        "args": [ "/mnt/e/project/langgraph_mcp_agent/core/mcp_server/tools/weather_tools.py"],
+        "transport": "stdio"
+    },   
+        "amap": {
+        "command": "python",
+        "args": [ "/mnt/e/project/langgraph_mcp_agent/core/mcp_server/tools/amap_tools.py"],
+        "transport": "stdio"
+    }    
 }

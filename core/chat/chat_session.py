@@ -12,7 +12,7 @@ import os
 from dotenv import load_dotenv
 from ..mcp_client_manager import MCPClientManager
 
-load_dotenv('/mnt/e/project/chatbot_v1/.env')
+load_dotenv('/mnt/e/project/langgraph_mcp_agent/.env')
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
@@ -53,7 +53,7 @@ class ChatSession:
         self.graph = graph_builder.compile(checkpointer=self.memory)
 
     def get_server_info(self):
-        return self.client.get_raw_config()  # 假设 MCPClientManager 实现了该方法
+        return self.client.get_raw_config() 
 
     async def _stream_once(self, user_input: str) -> Tuple[str, List[str]]:
         config = {"configurable": {"thread_id": "1"}}
