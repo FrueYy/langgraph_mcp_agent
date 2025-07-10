@@ -2,6 +2,7 @@ import streamlit as st
 import sys
 import os
 import asyncio
+import json
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -31,16 +32,87 @@ with st.sidebar:
         st.session_state.workflow_steps = []
         st.session_state.thought_history = []
         st.session_state.session = ChatSession()  # 重建会话
-        st.experimental_rerun()
+        st.rerun()
 
     if st.button("🔄 刷新工具", use_container_width=True):
         st.session_state.session = ChatSession()  # 重建会话即刷新工具
         st.session_state.workflow_steps = []
-        st.experimental_rerun()
+        st.rerun()
 
     # MCP 服务信息展示
     with st.expander("🛠️ 当前 MCP 服务配置", expanded=False):
-        st.json(st.session_state.session.get_server_info())
+        server_info = st.session_state.session.get_server_info()
+
+        card_style = """
+            <style>
+            .tool-card {
+                background-color: #f9f9f9;
+                border-radius: 12px;
+                padding: 12px 16px;
+                margin-bottom: 10px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            }
+            .tool-name {
+                font-weight: 600;
+                font-size: 16px;
+                color: #262730;
+                margin-bottom: 6px;
+            }
+            .tool-transport {
+                font-size: 14px;
+                color: #6c757d;
+            }
+            .tool-transport span {
+                font-weight: 500;
+                background-color: #e8f0fe;
+                color: #1967d2;
+                padding: 2px 6px;
+                border-radius: 6px;
+            }
+            </style>
+        """
+        st.markdown(card_style, unsafe_allow_html=True)
+
+        for tool_name, config in server_info.items():
+            transport = config.get("transport", "unknown")
+            card_html = f"""
+            <div class="tool-card">
+                <div class="tool-name">{tool_name}</div>
+                <div class="tool-transport">🔁 Transport: <span>{transport}</span></div>
+            </div>
+            """
+            st.markdown(card_html, unsafe_allow_html=True)
+
+                # 添加工具功能（持久保存）
+        st.markdown("---")
+        st.markdown("### ➕ 添加新工具")
+
+        new_tool_json = st.text_area(
+            "请输入新工具 JSON（键名+对象）",
+            height=160,
+            placeholder='"demo-tool": {"command": "python", "args": ["demo.py"], "transport": "stdio"}'
+        )
+
+        if st.button("✅ 添加工具并保存"):
+            try:
+                # 1. 解析用户输入
+                parsed = json.loads("{" + new_tool_json.strip().rstrip(",") + "}")
+                
+                # 2. 读取原始配置
+                current_config = st.session_state.session.get_server_info()
+                current_config.update(parsed)
+
+                # 3. 写回配置文件
+                with open(st.session_state.session.server_config_path, "w", encoding="utf-8") as f:
+                    json.dump(current_config, f, indent=4, ensure_ascii=False)
+
+                st.success("✅ 工具添加成功并已写入配置文件！")
+                st.rerun()
+
+            except Exception as e:
+                st.error(f"❌ 添加失败，请检查 JSON 格式：{e}")
+
+
 
 # 显示历史对话
 for i, (user_msg, bot_msg) in enumerate(st.session_state.chat_history):

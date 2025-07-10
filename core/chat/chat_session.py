@@ -1,7 +1,5 @@
-from typing import List, Tuple
 from typing_extensions import TypedDict, Annotated
 from langchain_openai.chat_models.base import BaseChatOpenAI
-from langchain_core.messages import BaseMessage
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import StateGraph
 from langgraph.graph.message import add_messages
@@ -27,7 +25,8 @@ class ChatSession:
             max_tokens=1024,
             temperature=0
         )
-        self.client = MCPClientManager(config_path='/mnt/e/project/langgraph_mcp_agent/core/mcp_server/server_config.json')
+        self.server_config_path = os.getenv('SERVER_CONFIG_PATH')
+        self.client = MCPClientManager(self.server_config_path)
         self.graph = None
         self.tools = []
         self.llm_with_tools = None
@@ -37,6 +36,7 @@ class ChatSession:
         self.loop.run_until_complete(self._initialize_graph())
 
     async def _initialize_graph(self):
+
         self.tools = await self.client.get_tools()
         self.llm_with_tools = self.llm.bind_tools(self.tools)
 

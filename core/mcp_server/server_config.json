@@ -1,22 +1,57 @@
 {
-        "math": {
+    "math": {
         "command": "python",
-        "args": ["/mnt/e/project/langgraph_mcp_agent/core/mcp_server/tools/math_tools.py"],
+        "args": [
+            "/mnt/e/project/langgraph_mcp_agent/core/mcp_server/tools/math_tools.py"
+        ],
         "transport": "stdio"
     },
-        "weather": {
+    "weather": {
         "command": "python",
-        "args": [ "/mnt/e/project/langgraph_mcp_agent/core/mcp_server/tools/weather_tools.py"],
-        "transport": "stdio"
-    },   
-        "amap": {
-        "command": "python",
-        "args": [ "/mnt/e/project/langgraph_mcp_agent/core/mcp_server/tools/amap_tools.py"],
+        "args": [
+            "/mnt/e/project/langgraph_mcp_agent/core/mcp_server/tools/weather_tools.py"
+        ],
         "transport": "stdio"
     },
-        "mcp-server-firecrawl": {
-      "url": "http://localhost:3000/sse",
-      "transport": "sse"
+    "amap": {
+        "command": "python",
+        "args": [
+            "/mnt/e/project/langgraph_mcp_agent/core/mcp_server/tools/amap_tools.py"
+        ],
+        "transport": "stdio"
+    },
+    "mcp-server-firecrawl": {
+        "url": "http://localhost:3000/sse",
+        "transport": "sse"
+    },
+    "arxiv-mcp-server": {
+        "command": "uv",
+        "args": [
+            "tool",
+            "run",
+            "arxiv-mcp-server",
+            "--storage-path",
+            "/mnt/e/arxiv_paper"
+        ],
+        "transport": "stdio"
+    },
+    "time-mcp": {
+        "command": "npx",
+        "args": [
+            "-y",
+            "time-mcp"
+        ],
+        "transport": "stdio"
+    },
+    "firecrawl-mcp": {
+        "command": "npx",
+        "args": [
+            "-y",
+            "firecrawl-mcp"
+        ],
+        "env": {
+            "FIRECRAWL_API_KEY": "fc-77a3620ca7e64ecdb0b840f7ba09a304"
+        },
+        "transport": "stdio"
     }
-   
 }
