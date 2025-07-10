@@ -1,5 +1,3 @@
-# core/chat/chat_session.py
-import asyncio
 from typing import List, Tuple
 from typing_extensions import TypedDict, Annotated
 from langchain_openai.chat_models.base import BaseChatOpenAI
@@ -9,8 +7,11 @@ from langgraph.graph import StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from dotenv import load_dotenv
 from ..mcp_client_manager import MCPClientManager
+import asyncio
 
 load_dotenv('/mnt/e/project/langgraph_mcp_agent/.env')
 
@@ -42,7 +43,7 @@ class ChatSession:
         graph_builder = StateGraph(State)
 
         async def chatbot(state: State):
-            return {"messages": [await self.llm_with_tools.ainvoke(state["messages"])]}
+            return {"messages": [await self.llm_with_tools.ainvoke(state["messages"]) ]}
 
         graph_builder.add_node("chatbot", chatbot)
         graph_builder.add_node("tools", ToolNode(tools=self.tools))
@@ -55,18 +56,38 @@ class ChatSession:
     def get_server_info(self):
         return self.client.get_raw_config() 
 
-    async def _stream_once(self, user_input: str) -> Tuple[str, List[str]]:
+ 
+ 
+    async def stream_with_trace(self, user_input: str):
         config = {"configurable": {"thread_id": "1"}}
-        trace = []
         final_response = ""
+
         async for event in self.graph.astream(
             {"messages": [{"role": "user", "content": user_input}]},
             config,
         ):
-            for key, value in event.items():
-                trace.append(f"[{key}] {value['messages'][-1].content}")
-                final_response = value["messages"][-1].content
-        return final_response, trace
+            for node_name, node_output in event.items():
+                messages = node_output.get("messages", [])
 
-    async def run(self, user_input: str) -> Tuple[str, List[str]]:
-        return await self._stream_once(user_input)
+                for msg in messages:
+                    if msg.type == "ai":
+                        content = msg.content or "[空回复]"
+                        tool_calls = msg.tool_calls or []
+
+                        if tool_calls:
+                            yield "llm_thinking", "正在思考下一步动作..."
+
+                            for call in tool_calls:
+                                tool_name = call.get("name")
+                                args = call.get("args", {})
+                                yield "tool_call", f"{tool_name}({args})"
+                        else:
+                            yield "llm_response", content
+                            final_response = content
+
+                    elif msg.type == "tool":
+                        yield "tool_result", msg.content
+
+        yield "final_response", final_response
+
+

@@ -13,5 +13,10 @@
         "command": "python",
         "args": [ "/mnt/e/project/langgraph_mcp_agent/core/mcp_server/tools/amap_tools.py"],
         "transport": "stdio"
-    }    
+    },
+        "mcp-server-firecrawl": {
+      "url": "http://localhost:3000/sse",
+      "transport": "sse"
+    }
+   
 }

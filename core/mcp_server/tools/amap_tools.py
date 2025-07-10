@@ -10,6 +10,7 @@ load_dotenv('/mnt/e/project/langgraph_mcp_agent/.env')
 
 AMAP_MAPS_API_KEY = os.getenv("AMAP_API_KEY")
 
+
 mcp = FastMCP("amap")
 
 @mcp.tool()
