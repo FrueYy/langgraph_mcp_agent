@@ -20,10 +20,7 @@
         ],
         "transport": "stdio"
     },
-    "mcp-server-firecrawl": {
-        "url": "http://localhost:3000/sse",
-        "transport": "sse"
-    },
+
     "arxiv-mcp-server": {
         "command": "uv",
         "args": [
@@ -50,7 +47,7 @@
             "firecrawl-mcp"
         ],
         "env": {
-            "FIRECRAWL_API_KEY": "fc-77a3620ca7e64ecdb0b840f7ba09a304"
+            "FIRECRAWL_API_KEY": "your_firecrawl_api_key_here"
         },
         "transport": "stdio"
     }

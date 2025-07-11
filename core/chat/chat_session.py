@@ -10,12 +10,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from dotenv import load_dotenv
 from ..mcp_client_manager import MCPClientManager
 import asyncio
-
+#加载环境变量，如API_KEY等
 load_dotenv('/mnt/e/project/langgraph_mcp_agent/.env')
 
+#定义图的状态
 class State(TypedDict):
     messages: Annotated[list, add_messages]
 
+#构建图结构
 class ChatSession:
     def __init__(self):
         self.llm = BaseChatOpenAI(

@@ -23,24 +23,24 @@ if "chat_history" not in st.session_state:
 if "workflow_steps" not in st.session_state:
     st.session_state.workflow_steps = []  # 用来存储工具调用工作流简化信息
 
-st.title("🧠 LangGraph MCP Agent")
+st.title("🧠LangGraph MCP Agent")
 
 # 侧边栏操作
 with st.sidebar:
-    if st.button("🧹 清空聊天", use_container_width=True):
+    if st.button("清空聊天", use_container_width=True):
         st.session_state.chat_history = []
         st.session_state.workflow_steps = []
         st.session_state.thought_history = []
         st.session_state.session = ChatSession()  # 重建会话
         st.rerun()
 
-    if st.button("🔄 刷新工具", use_container_width=True):
+    if st.button("刷新工具", use_container_width=True):
         st.session_state.session = ChatSession()  # 重建会话即刷新工具
         st.session_state.workflow_steps = []
         st.rerun()
 
     # MCP 服务信息展示
-    with st.expander("🛠️ 当前 MCP 服务配置", expanded=False):
+    with st.expander("当前 MCP 服务配置", expanded=True):
         server_info = st.session_state.session.get_server_info()
 
         card_style = """
@@ -78,14 +78,14 @@ with st.sidebar:
             card_html = f"""
             <div class="tool-card">
                 <div class="tool-name">{tool_name}</div>
-                <div class="tool-transport">🔁 Transport: <span>{transport}</span></div>
+                <div class="tool-transport"> Transport: <span>{transport}</span></div>
             </div>
             """
             st.markdown(card_html, unsafe_allow_html=True)
 
-                # 添加工具功能（持久保存）
+                # 添加工具
         st.markdown("---")
-        st.markdown("### ➕ 添加新工具")
+        st.markdown("###  添加新工具")
 
         new_tool_json = st.text_area(
             "请输入新工具 JSON（键名+对象）",
@@ -93,7 +93,7 @@ with st.sidebar:
             placeholder='"demo-tool": {"command": "python", "args": ["demo.py"], "transport": "stdio"}'
         )
 
-        if st.button("✅ 添加工具并保存"):
+        if st.button(" 添加工具并保存"):
             try:
                 # 1. 解析用户输入
                 parsed = json.loads("{" + new_tool_json.strip().rstrip(",") + "}")
@@ -106,11 +106,11 @@ with st.sidebar:
                 with open(st.session_state.session.server_config_path, "w", encoding="utf-8") as f:
                     json.dump(current_config, f, indent=4, ensure_ascii=False)
 
-                st.success("✅ 工具添加成功并已写入配置文件！")
+                st.success(" 工具添加成功并已写入配置文件！")
                 st.rerun()
 
             except Exception as e:
-                st.error(f"❌ 添加失败，请检查 JSON 格式：{e}")
+                st.error(f" 添加失败，请检查 JSON 格式：{e}")
 
 
 
