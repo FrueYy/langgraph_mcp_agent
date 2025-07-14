@@ -10,7 +10,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from dotenv import load_dotenv
 from ..mcp_client_manager import MCPClientManager
 import asyncio
-#加载环境变量，如API_KEY等
+
+#加载环境变量
 load_dotenv('/mnt/e/project/langgraph_mcp_agent/.env')
 
 #定义图的状态
@@ -21,11 +22,11 @@ class State(TypedDict):
 class ChatSession:
     def __init__(self):
         self.llm = BaseChatOpenAI(
-            model='deepseek-chat',
+            model="deepseek-chat",
             openai_api_key=os.getenv('DEEPSEEK_API_KEY'),
             openai_api_base='https://api.deepseek.com/v1',
             max_tokens=1024,
-            temperature=0
+            temperature=0,
         )
         self.server_config_path = os.getenv('SERVER_CONFIG_PATH')
         self.client = MCPClientManager(self.server_config_path)
@@ -36,14 +37,14 @@ class ChatSession:
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
         self.loop.run_until_complete(self._initialize_graph())
-
+#初始化图
     async def _initialize_graph(self):
 
         self.tools = await self.client.get_tools()
         self.llm_with_tools = self.llm.bind_tools(self.tools)
 
         graph_builder = StateGraph(State)
-
+       
         async def chatbot(state: State):
             return {"messages": [await self.llm_with_tools.ainvoke(state["messages"]) ]}
 
@@ -54,12 +55,13 @@ class ChatSession:
         graph_builder.set_entry_point("chatbot")
 
         self.graph = graph_builder.compile(checkpointer=self.memory)
-
+        print(self.graph.get_graph().draw_mermaid())
+#获取服务器信息
     def get_server_info(self):
         return self.client.get_raw_config() 
 
  
- 
+#异步流式响应
     async def stream_with_trace(self, user_input: str):
         config = {"configurable": {"thread_id": "1"}}
         final_response = ""
