@@ -10,12 +10,29 @@ from core.chat.chat_session import ChatSession
 
 st.set_page_config(page_title="LangGraph MCP Agent", layout="wide")
 
+# === 模型选择 ===
+st.sidebar.markdown("### 模型选择")
+available_models = ["deepseek-chat", "deepseek-reasoner"]
+
+# 初始化默认模型
+if "selected_model" not in st.session_state:
+    st.session_state.selected_model = "deepseek-chat"
+
+# 显示模型选择器
+selected_model = st.sidebar.selectbox("请选择模型", available_models, index=available_models.index(st.session_state.selected_model))
+
+# 切换模型后重建 ChatSession
+if selected_model != st.session_state.selected_model:
+    st.session_state.selected_model = selected_model
+    st.session_state.session = ChatSession(model_name=selected_model)
+    st.rerun()
+
 # 状态初始化
 if "thought_history" not in st.session_state:
     st.session_state.thought_history = []
 
 if "session" not in st.session_state:
-    st.session_state.session = ChatSession()
+    st.session_state.session = ChatSession(model_name=st.session_state.selected_model)
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
@@ -25,17 +42,19 @@ if "workflow_steps" not in st.session_state:
 
 st.title("🧠LangGraph MCP Agent")
 
+
+
 # 侧边栏操作
 with st.sidebar:
     if st.button("清空聊天", use_container_width=True):
         st.session_state.chat_history = []
         st.session_state.workflow_steps = []
         st.session_state.thought_history = []
-        st.session_state.session = ChatSession()  # 重建会话
+        st.session_state.session = ChatSession(model_name=st.session_state.selected_model)  # 重建会话
         st.rerun()
 
     if st.button("刷新工具", use_container_width=True):
-        st.session_state.session = ChatSession()  # 重建会话即刷新工具
+        st.session_state.session = ChatSession(model_name=st.session_state.selected_model)  # 重建会话即刷新工具
         st.session_state.workflow_steps = []
         st.rerun()
 
