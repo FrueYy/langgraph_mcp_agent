@@ -26,8 +26,8 @@ class MCPClientManager:
     async def get_prompt(self, server_name: str, prompt_name: str, arguments: dict[str, Any] = None):
         return await self.client.get_prompt(server_name, prompt_name, arguments=arguments)
 
-    async def get_resources(self, server_name: str, uris: list[str] = None):
-        return await self.client.get_resources(server_name, uris=uris)  
+    async def get_resources(self, server_name: str = None, uris: list[str] = None):
+        return await self.client.get_resources(server_name = server_name, uris=uris)  
     
     def get_raw_config(self) -> dict:
         with open(self.config_path, "r") as f:
