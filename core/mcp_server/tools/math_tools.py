@@ -102,58 +102,57 @@ def round_num(x: float, ndigits: int = 0) -> float:
     """Round a number to the given number of digits (default 0)"""
     return round(x, ndigits)
 
-# 矩阵运算
 @mcp.tool()
 def matrix_add(a: List[List[float]], b: List[List[float]]) -> List[List[float]]:
-    """矩阵加法"""
+    """Matrix addition"""
     return (np.array(a) + np.array(b)).tolist()
 
 @mcp.tool()
 def matrix_multiply(a: List[List[float]], b: List[List[float]]) -> List[List[float]]:
-    """矩阵乘法"""
+    """Matrix multiplication"""
     return (np.matmul(a, b)).tolist()
 
 @mcp.tool()
 def matrix_transpose(a: List[List[float]]) -> List[List[float]]:
-    """矩阵转置"""
+    """Matrix transpose"""
     return np.transpose(a).tolist()
 
 @mcp.tool()
 def matrix_inverse(a: List[List[float]]) -> List[List[float]]:
-    """矩阵求逆（限方阵）"""
+    """Matrix inverse (square matrix only)"""
     return np.linalg.inv(a).tolist()
 
 @mcp.tool()
 def matrix_determinant(a: List[List[float]]) -> float:
-    """矩阵行列式"""
+    """Matrix determinant"""
     return float(np.linalg.det(a))
 
 # 微积分运算
 @mcp.tool()
 def derivative(expr: str, var: str = "x") -> str:
-    """对表达式 expr 对变量 var 求导"""
+    """Take the derivative of an expression with respect to a variable"""
     x = sp.Symbol(var)
     f = sp.sympify(expr)
     return str(sp.diff(f, x))
 
 @mcp.tool()
 def integral(expr: str, var: str = "x") -> str:
-    """对表达式 expr 对变量 var 求不定积分"""
+    """Compute the indefinite integral of an expression with respect to a variable"""
     x = sp.Symbol(var)
     f = sp.sympify(expr)
     return str(sp.integrate(f, x))
 
 @mcp.tool()
 def definite_integral(expr: str, var: str = "x", lower: float = 0, upper: float = 1) -> float:
-    """对表达式 expr 在区间 [lower, upper] 对变量 var 求定积分"""
+    """Compute the definite integral of an expression from lower to upper bounds"""
     x = sp.Symbol(var)
     f = sp.sympify(expr)
     return float(sp.integrate(f, (x, lower, upper)))
 
-# 代数方程求解
+# 求解代数方程
 @mcp.tool()
 def solve_equation(equation: str, var: str = "x") -> List[str]:
-    """求解一个代数方程，例如 'x**2 - 2 = 0'"""
+    """Solve an algebraic equation, e.g., 'x**2 - 2 = 0'"""
     x = sp.Symbol(var)
     eq = sp.sympify(equation)
     solutions = sp.solve(eq, x)
