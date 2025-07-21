@@ -58,20 +58,76 @@ class ChatSession:
     def get_server_info(self):
         return self.client.get_raw_config()
     
+    async def list_all_resources(self) -> list[str]:
+        all_uris = []
+        config = self.client.get_raw_config()  # 注意调用 MCPClientManager 自己的方法
 
+        for server in config:
+            print(f"正在加载 {server} 的资源...")
+            try:
+                async with self.client.client.session(server) as session:
+                    resource_list = await session.list_resources()
+                    uris = [r.uri for r in resource_list.resources]
+                    print(f"[{server}] 发现 {len(uris)} 个资源")
+                    all_uris.extend(uris)
+            except Exception as e:
+                print(f"[跳过] {server} 出错：{e}")
+                continue
+
+        return all_uris
+
+
+        
     async def stream_with_trace(self, user_input: str, resource_uris: list[str] = None):
+        print(f"收到资源注入请求，uris: {resource_uris}")
         config = {"configurable": {"thread_id": "1"}}
         final_response = ""
-           
+        
         # 加载 MCP 资源内容
         context_texts = []
-#        if resource_uris:
-        print(f"加载资源文件")
-        blobs = await self.client.get_resources("DataServer")
-        print(f"加载到 {len(blobs)} 个资源文件")        
-        context_texts = [b.as_string() for b in blobs]
+        if resource_uris:
+            # 创建 uri -> server 映射
+            uri_server_map = {}
+            server_config = self.client.get_raw_config()
+            for server in server_config:
+                try:
+                    async with self.client.client.session(server) as session:
+                        resource_list = await session.list_resources()
+                        for r in resource_list.resources:
+                            uri_server_map[r.uri] = server
+                except:
+                    continue
 
-        # 构造 prompt messages
+            # get_resources
+            from collections import defaultdict
+            server_to_uris = defaultdict(list)
+            for uri in resource_uris:
+                server = uri_server_map.get(uri)
+                if not server:
+                    print(f"[警告] 未找到 uri 映射的 server：{uri}")
+                else:
+                    print(f"[映射] {uri} 属于 server {server}")
+                    server_to_uris[server].append(uri)
+
+            for server, uris in server_to_uris.items():
+                try:
+                    blobs = await self.client.get_resources(server, uris=uris)
+                    for b in blobs:
+                        content = b.as_string()
+                        max_len = 3000
+                        parts = [content[i:i+max_len] for i in range(0, len(content), max_len)]
+                        context_texts.extend(parts)
+                        # 打印当前context_texts长度（块数）
+                        print(f"[调试] 当前context_texts块数: {len(context_texts)}")
+
+                        # 打印所有文本块的总字符数
+                        total_chars = sum(len(t) for t in context_texts)
+                        print(f"[调试] 当前context_texts总字符数: {total_chars}")
+                except Exception as e:
+                    print(f"加载 {server} 的资源失败：{e}")
+
+
+        # prompt messages
         messages = []
         if context_texts:
             context_block = "\n\n".join(context_texts)
@@ -81,7 +137,7 @@ class ChatSession:
             })
         messages.append({"role": "user", "content": user_input})
 
-        # 执行对话流
+        # 更新对话
         async for event in self.graph.astream({"messages": messages}, config):
             for node_name, node_output in event.items():
                 for msg in node_output.get("messages", []):
