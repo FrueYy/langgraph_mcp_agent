@@ -54,6 +54,7 @@ dependencies = [
     "pydantic-core==2.33.2",
     "pydantic-settings==2.10.1",
     "pydeck==0.9.1",
+    "pymupdf>=1.26.3",
     "python-dateutil==2.9.0.post0",
     "python-dotenv==1.1.1",
     "python-multipart==0.0.20",
