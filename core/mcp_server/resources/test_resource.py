@@ -20,6 +20,5 @@ def get_config() -> dict:
     }
 
 if __name__ == "__main__":
-    # 启动 MCP 服务器，使用 stdio 通信
-    print("✅ Data Server 启动，提供动态资源和数据")
+
     mcp.run(transport="stdio")
