@@ -18,10 +18,10 @@ available_models = ["deepseek-chat", "deepseek-reasoner"]
 if "selected_model" not in st.session_state:
     st.session_state.selected_model = "deepseek-chat"
 
-# 显示模型选择器
+# 选择模型
 selected_model = st.sidebar.selectbox("请选择模型", available_models, index=available_models.index(st.session_state.selected_model))
 
-# 切换模型后重建 ChatSession
+# 切换模型
 if selected_model != st.session_state.selected_model:
     st.session_state.selected_model = selected_model
     st.session_state.session = ChatSession(model_name=selected_model)
@@ -42,6 +42,24 @@ if "workflow_steps" not in st.session_state:
 
 st.title("🧠LangGraph MCP Agent")
 
+# === 加载资源列表===
+if "resource_uris" not in st.session_state:
+    st.session_state.resource_uris = []
+
+if "all_resource_uris" not in st.session_state:
+    uris = asyncio.run(st.session_state.session.list_all_resources())
+    print(f"加载到 {len(uris)} 个资源")
+    st.session_state.all_resource_uris = uris
+
+# 资源选择部分
+with st.sidebar:
+    st.markdown("### 📂选择注入资源")
+    selected_uris = st.multiselect(
+        "选择需要注入上下文的资源：",
+        st.session_state.all_resource_uris,
+        default=st.session_state.resource_uris,
+    )
+    st.session_state.resource_uris = selected_uris
 
 
 # 侧边栏操作
@@ -58,7 +76,8 @@ with st.sidebar:
         st.session_state.workflow_steps = []
         st.rerun()
 
-    # MCP 服务信息展示
+
+    # MCP服务信息展示
     with st.expander("当前 MCP 服务配置", expanded=True):
         server_info = st.session_state.session.get_server_info()
 
@@ -102,7 +121,7 @@ with st.sidebar:
             """
             st.markdown(card_html, unsafe_allow_html=True)
 
-                # 添加工具
+        # 添加工具
         st.markdown("---")
         st.markdown("###  添加新工具")
 
@@ -133,7 +152,7 @@ with st.sidebar:
 
 
 
-# 显示历史对话
+# 历史对话
 for i, (user_msg, bot_msg) in enumerate(st.session_state.chat_history):
     with st.chat_message("user"):
         st.markdown(user_msg)
@@ -161,7 +180,7 @@ if user_input:
                 thought_container = st.empty()  # 在expander内流式更新
 
                 async def handle():
-                    async for etype, content in st.session_state.session.stream_with_trace(user_input):
+                    async for etype, content in st.session_state.session.stream_with_trace(user_input, resource_uris=st.session_state.resource_uris):
                         if etype in {"llm_thinking", "tool_call", "tool_result"}:
                             icon_map = {
                                 "llm_thinking": "💭",
@@ -184,7 +203,7 @@ if user_input:
 
                 asyncio.run(handle())
 
-            # 输出最终回复
+            
             st.markdown(response_box["response"])
 
             # 保存到历史状态
