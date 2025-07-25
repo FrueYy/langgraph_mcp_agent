@@ -8,7 +8,7 @@ from langgraph.graph import StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 from ..mcp_client_manager import MCPClientManager
-
+from collections import defaultdict
 # 加载环境变量
 load_dotenv("/mnt/e/project/langgraph_mcp_agent/.env")
 
@@ -38,7 +38,7 @@ class ChatSession:
     async def _initialize_graph(self):
 
         self.tools = await self.client.get_tools()
-        #prompt = await self.client.get_prompt("PromptServer","ask_about_topic", {"topic": "LangGraph MCP Agent"})
+
         self.llm_with_tools = self.llm.bind_tools(self.tools)
 
         builder = StateGraph(State)
@@ -60,7 +60,7 @@ class ChatSession:
     
     async def list_all_resources(self) -> list[str]:
         all_uris = []
-        config = self.client.get_raw_config()  # 注意调用 MCPClientManager 自己的方法
+        config = self.client.get_raw_config() 
 
         for server in config:
             print(f"正在加载 {server} 的资源...")
@@ -76,7 +76,22 @@ class ChatSession:
 
         return all_uris
 
+    async def list_all_prompts(self) -> list[str]:
+        all_prompts = []
+        config = self.client.get_raw_config()
+        for server in config:
+            print(f"正在加载 {server} 的提示...")
+            try:
+                async with self.client.client.session(server) as session:
+                    prompt_list = await session.list_prompts()
+                    prompts = [p.name for p in prompt_list.prompts]
+                    print(f"[{server}] 发现 {len(prompts)} 个提示")
+                    all_prompts.extend(prompts)
+            except Exception as e:
+                print(f"[跳过] {server} 出错：{e}")
+                continue
 
+        return all_prompts
         
     async def stream_with_trace(self, user_input: str, resource_uris: list[str] = None):
         print(f"收到资源注入请求，uris: {resource_uris}")
@@ -99,7 +114,7 @@ class ChatSession:
                     continue
 
             # get_resources
-            from collections import defaultdict
+
             server_to_uris = defaultdict(list)
             for uri in resource_uris:
                 server = uri_server_map.get(uri)
