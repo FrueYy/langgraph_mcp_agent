@@ -1,4 +1,4 @@
-# langgraph_mcp_agent
+# 🧠langgraph_mcp_agent
 
 基于Langgraph架构的支持MCP协议的智能代理
 
