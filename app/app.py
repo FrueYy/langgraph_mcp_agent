@@ -25,7 +25,7 @@ selected_model = st.sidebar.selectbox("请选择模型", available_models, index
 if selected_model != st.session_state.selected_model:
     st.session_state.selected_model = selected_model
     st.session_state.session = ChatSession(model_name=selected_model)
-    st.rerun()
+    st.experimental_rerun()
 
 # 状态初始化
 if "thought_history" not in st.session_state:
@@ -65,31 +65,24 @@ with st.sidebar:
         default=st.session_state.resource_uris,
     )
     st.session_state.resource_uris = selected_uris
+
+# 提示模版名称与参数名列表的映射
+prompt_args_map = {}
+for name, args in st.session_state.all_prompts:
+    prompt_args_map[name] = [arg.name for arg in args] if args else []
+
 # 侧边栏：资源选择、快捷提示操作
 with st.sidebar:
     st.markdown("### 💡 快捷提示操作")
-    prompt_options = ["（不使用提示）"] + [name for name, _ in st.session_state.all_prompts]
-    selected_prompt_name = st.selectbox("选择一个提示模板", prompt_options)
 
-    if "selected_prompt" not in st.session_state:
-        st.session_state.selected_prompt = None
-    if "selected_prompt_args_name" not in st.session_state:
-        st.session_state.selected_prompt_args_name = None
+    # 选择提示模板
+    selected_prompt = st.selectbox("选择一个提示模板", ["（不使用提示）"] + list(prompt_args_map.keys()), key="selected_prompt")
 
-    if selected_prompt_name == "（不使用提示）":
-        st.session_state.selected_prompt = None
-        st.session_state.selected_prompt_args_name = None
+    # 根据选择设置参数名列表
+    if selected_prompt == "（不使用提示）":
+        st.session_state.selected_prompt_args = []
     else:
-        st.session_state.selected_prompt = selected_prompt_name
-
-        for name, args in st.session_state.all_prompts:
-            if name == selected_prompt_name:
-                if args:
-                    st.session_state.selected_prompt_args_name = args[0].name  # 第一个参数名
-                else:
-                    st.session_state.selected_prompt_args_name = None
-                break
-
+        st.session_state.selected_prompt_args = prompt_args_map.get(selected_prompt, [])
 
     st.markdown("---")
 
@@ -99,12 +92,12 @@ with st.sidebar:
         st.session_state.workflow_steps = []
         st.session_state.thought_history = []
         st.session_state.session = ChatSession(model_name=st.session_state.selected_model)  # 重建会话
-        st.rerun()
+        st.experimental_rerun()
 
     if st.button("刷新工具", use_container_width=True):
         st.session_state.session = ChatSession(model_name=st.session_state.selected_model)  # 重建会话即刷新工具
         st.session_state.workflow_steps = []
-        st.rerun()
+        st.experimental_rerun()
 
     # MCP服务信息展示
     with st.expander("当前 MCP 服务配置", expanded=True):
@@ -173,7 +166,7 @@ with st.sidebar:
                     json.dump(current_config, f, indent=4, ensure_ascii=False)
 
                 st.success(" 工具添加成功并已写入配置文件！")
-                st.rerun()
+                st.experimental_rerun()
 
             except Exception as e:
                 st.error(f" 添加失败，请检查 JSON 格式：{e}")
@@ -191,8 +184,13 @@ for i, (user_msg, bot_msg) in enumerate(st.session_state.chat_history):
         st.markdown(bot_msg)
 
 # 用户输入处理 
-if st.session_state.selected_prompt and st.session_state.selected_prompt_args_name:
-    placeholder_text = f"请输入参数（{st.session_state.selected_prompt_args_name}），模型会自动基于提示模板回答..."
+if st.session_state.selected_prompt and st.session_state.selected_prompt_args:
+    arg_count = len(st.session_state.selected_prompt_args)
+    if arg_count == 1:
+        placeholder_text = f"请输入参数（{st.session_state.selected_prompt_args[0]}），系统将根据参数内容补充提示并作答"
+    else:
+        arg_names_str = " || ".join(st.session_state.selected_prompt_args)
+        placeholder_text = f"请按顺序输入参数（{arg_names_str}），各参数之间用 '||' 分隔，系统将根据参数内容补充提示并作答"
 else:
     placeholder_text = "请输入你的问题..."
 
@@ -211,22 +209,20 @@ if user_input:
 
                 async def handle():
                     prompt_name = st.session_state.get("selected_prompt")
-                    arg_name = st.session_state.get("selected_prompt_args_name")
+                    arg_names = st.session_state.get("selected_prompt_args", [])
 
-                    # 如果有选提示并且参数名，构造参数字典
-                    args_dict = {}
-                    if prompt_name and arg_name:
-                        args_dict[arg_name] = user_input
+                    # 解析参数
+                    if prompt_name and arg_names:
+                        parts = [part.strip() for part in user_input.split("||")]
+                        args_dict = dict(zip(arg_names, parts))
                     else:
-                        # 无提示或无参数，传空字典
                         args_dict = {}
 
-                    # 传入提示名和参数字典
                     async for etype, content in st.session_state.session.stream_with_trace(
-                        user_input, 
+                        user_input,
                         resource_uris=st.session_state.resource_uris,
                         prompt_injection=prompt_name,
-                        prompt_args=args_dict 
+                        prompt_args=args_dict
                     ):
                         if etype in {"llm_thinking", "tool_call", "tool_result"}:
                             icon_map = {
@@ -248,8 +244,7 @@ if user_input:
 
             st.markdown(response_box["response"])
 
-            # 保存对话历史
+            # 保存聊天历史
             st.session_state.chat_history.append((user_input, response_box["response"]))
             st.session_state.thought_history.append(thought_buffer)
             st.session_state.workflow_steps.append([])
-
