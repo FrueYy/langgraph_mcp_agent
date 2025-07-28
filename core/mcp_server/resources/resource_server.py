@@ -35,13 +35,5 @@ def read_new_features() -> str:
         return f.read()    
 
 
-@mcp.resource(uri = "file:///天洑司天鉴用户操作手册v1.0-0131.pdf")
-def read_sitianjian_manual() -> str:
-    """读取天洑司天鉴用户操作手册"""
-    path = os.path.join(RESOURCE_DIR, "天洑司天鉴用户操作手册v1.0-0131.pdf")
-    doc = fitz.open(path)
-    return "\n".join(page.get_text() for page in doc)
-
-
 if __name__ == "__main__":
     mcp.run(transport="stdio")
