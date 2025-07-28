@@ -6,19 +6,10 @@
         ],
         "transport": "stdio"
     },
-    "weather": {
-        "command": "python",
-        "args": [
-            "/mnt/e/project/langgraph_mcp_agent/core/mcp_server/tools/weather_tools.py"
-        ],
-        "transport": "stdio"
-    },
-    "amap": {
-        "command": "python",
-        "args": [
-            "/mnt/e/project/langgraph_mcp_agent/core/mcp_server/tools/amap_tools.py"
-        ],
-        "transport": "stdio"
+
+    "amap-maps-streamableHTTP": {
+      "url": "https://mcp.amap.com/mcp?key=e4de13e7805699e85d06ce90e5456c01",
+      "transport": "streamable_http"
     },
 
     "arxiv-mcp-server": {
@@ -40,6 +31,13 @@
         ],
         "transport": "stdio"
     },
+    "LocalResourceServer": {
+        "command": "python",
+        "args": [
+            "/mnt/e/project/langgraph_mcp_agent/core/mcp_server/resources/resource_server.py"
+        ],
+        "transport": "stdio"
+    },
     "firecrawl-mcp": {
         "command": "npx",
         "args": [
@@ -49,6 +47,34 @@
         "env": {
             "FIRECRAWL_API_KEY": "your_firecrawl_api_key_here"
         },
+        "transport": "stdio"
+    },
+    "DataServer":{
+        "command": "python",
+        "args": [
+            "/mnt/e/project/langgraph_mcp_agent/core/mcp_server/resources/test_resource.py"
+        ],
+        "transport": "stdio"
+    },
+    "SearchLocalResource": {
+        "command": "python",
+        "args": [
+            "/mnt/e/project/langgraph_mcp_agent/core/mcp_server/tools/search_local_resource.py"
+        ],
+        "transport": "stdio"
+    },
+    "SearchMCPResource": {
+        "command": "python",
+        "args": [
+            "/mnt/e/project/langgraph_mcp_agent/core/mcp_server/tools/search_mcp_resource.py"
+        ],
+        "transport": "stdio"
+    },
+    "prompt-mcp": {
+        "command": "python",
+        "args": [
+            "/mnt/e/project/langgraph_mcp_agent/core/mcp_server/prompts/prompt.py"
+        ],
         "transport": "stdio"
     }
 }
