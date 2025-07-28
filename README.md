@@ -27,7 +27,7 @@
 ├── pyproject.toml             
 ├── uv.lock                    
 ├── .gitignore
-├── .env.example                  # 环境变量示例文件
+├── .env.example                   # 环境变量示例文件
 └── README.md 
 ```
 
@@ -60,10 +60,10 @@ cp .env.example .env
 建议使用虚拟环境隔离项目依赖，安装 [uv](https://pypi.org/project/uv/) 管理工具后执行：
 
 ```bash
-pip install uv           # 安装 uv 工具
-uv venv                 # 创建虚拟环境
-source .venv/bin/activate  # 激活虚拟环境
-uv install              # 安装项目依赖
+pip install uv               # 安装 uv 工具
+uv venv                      # 创建虚拟环境
+source .venv/bin/activate    # 激活虚拟环境
+uv install                   # 安装项目依赖
 ```
 ### 4. 启动 Streamlit 应用
 
