@@ -17,7 +17,7 @@ mcp = FastMCP(name="SearchMCPResource")
 @mcp.tool()
 async def list_mcp_resources() -> dict:
     """ 
-    列出所有已注册在mcp服务器的可用的资源 URI，在查询资源时优先调用此工具查询mcp服务器上的资源列表。
+    列出所有已注册在mcp服务器的可用的资源 URI,在查询资源时优先调用此工具查询mcp服务器上的资源列表。
     当询问的是安装方法、使用手册、版本特征、API 文档等内容时，优先使用此工具查询。
     如无结果，再使用搜索引擎网上搜索。
 

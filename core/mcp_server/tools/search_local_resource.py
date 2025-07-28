@@ -21,7 +21,7 @@ for path in Path(RESOURCE_DIR).iterdir():
 @mcp.tool()
 def list_local_resources() -> list[str]:
     """
-    请求本地资源读取时，先列出所有可用资源文件（支持 .md、.pdf、.txt）。
+    请求本地资源读取时，先列出所有可用资源文件（支持 .md、.pdf、.txt)。
     """
     return [r["filename"] for r in res_index]
 
@@ -29,8 +29,8 @@ def list_local_resources() -> list[str]:
 def read_local_resource(filename: str) -> str:
     """
     读取指定资源文件内容：
-      - .md/.txt：以 UTF-8 文本方式读取
-      - .pdf：使用 PyMuPDF 提取所有页面文本
+      - .md/.txt:以 UTF-8 文本方式读取
+      - .pdf:使用 PyMuPDF 提取所有页面文本
     Args:
         filename: 要读取的文件名
 
