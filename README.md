@@ -29,6 +29,7 @@
 ├── .gitignore
 ├── .env.example                  # 环境变量示例文件
 └── README.md 
+```
 
 ## 环境要求
 
@@ -45,6 +46,7 @@
 ```bash
 git clone https://github.com/FrueYy/langgraph_mcp_agent.git
 cd langgraph_mcp_agent
+```
 
 ### 2. 配置环境变量
 
@@ -52,7 +54,7 @@ cd langgraph_mcp_agent
 
 ```bash
 cp .env.example .env
-
+```
 ### 3. 安装 Python 依赖及创建虚拟环境
 
 建议使用虚拟环境隔离项目依赖，安装 [uv](https://pypi.org/project/uv/) 管理工具后执行：
@@ -62,14 +64,14 @@ pip install uv           # 安装 uv 工具
 uv venv                 # 创建虚拟环境
 source .venv/bin/activate  # 激活虚拟环境
 uv install              # 安装项目依赖
-
+```
 ### 4. 启动 Streamlit 应用
 
 依赖安装完成后，启动项目主程序：
 
 ```bash
 streamlit run app/app.py
-
+```
 
 ## 其他说明
 
