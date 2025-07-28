@@ -21,10 +21,7 @@
 ├── core/                          # 核心组件
 │   ├── chat/                      # 聊天会话部分，基于Langgraph的聊天机器人
 |   ├── mcp_server/                # mcp服务器，包含可调用的工具、资源等
-|   └── mcp_client_manager.py      # mcp客户端管理，封装客户端读取服务器配置文件的部分              
-├── libs/                          # 包含一些配置信息
-│   ├── llm_client.py              
-│   └── utils.py               
+|   └── mcp_client_manager.py      # mcp客户端管理，封装客户端读取服务器配置文件的部分                       
 ├── tests/                         
 │   ├── test_chat_session.py              
 │   ├── test_mcp_client.py              
