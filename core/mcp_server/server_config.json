@@ -45,7 +45,7 @@
             "firecrawl-mcp"
         ],
         "env": {
-            "FIRECRAWL_API_KEY": "your_firecrawl_api_key_here"
+            "FIRECRAWL_API_KEY": "your_api_key_here"
         },
         "transport": "stdio"
     },
