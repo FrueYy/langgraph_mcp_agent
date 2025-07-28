@@ -99,7 +99,7 @@ class ChatSession:
     async def get_prompt_content(self, server_name: str, prompt_name: str, args: dict | None = None) -> str:
         try:
             result = await self.client.get_prompt(server_name, prompt_name, arguments=args or {})
-            if result: # HumanMessage | AIMessage 列表
+            if result: 
                 msg = result[0]
                 return getattr(msg.content, "text", str(msg.content))
         except Exception as e:
