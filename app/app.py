@@ -25,7 +25,7 @@ selected_model = st.sidebar.selectbox("请选择模型", available_models, index
 if selected_model != st.session_state.selected_model:
     st.session_state.selected_model = selected_model
     st.session_state.session = ChatSession(model_name=selected_model)
-    st.experimental_rerun()
+    st.rerun()
 
 # 状态初始化
 if "thought_history" not in st.session_state:
@@ -92,12 +92,12 @@ with st.sidebar:
         st.session_state.workflow_steps = []
         st.session_state.thought_history = []
         st.session_state.session = ChatSession(model_name=st.session_state.selected_model)  # 重建会话
-        st.experimental_rerun()
+        st.rerun()
 
     if st.button("刷新工具", use_container_width=True):
         st.session_state.session = ChatSession(model_name=st.session_state.selected_model)  # 重建会话即刷新工具
         st.session_state.workflow_steps = []
-        st.experimental_rerun()
+        st.rerun()
 
     # MCP服务信息展示
     with st.expander("当前 MCP 服务配置", expanded=True):
@@ -166,7 +166,7 @@ with st.sidebar:
                     json.dump(current_config, f, indent=4, ensure_ascii=False)
 
                 st.success(" 工具添加成功并已写入配置文件！")
-                st.experimental_rerun()
+                st.rerun()
 
             except Exception as e:
                 st.error(f" 添加失败，请检查 JSON 格式：{e}")
@@ -209,6 +209,10 @@ if user_input:
 
                 async def handle():
                     prompt_name = st.session_state.get("selected_prompt")
+
+                    if prompt_name == "（不使用提示）":
+                        prompt_name = None
+
                     arg_names = st.session_state.get("selected_prompt_args", [])
 
                     # 解析参数
